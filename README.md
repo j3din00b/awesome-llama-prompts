@@ -14,6 +14,7 @@ For Chinese you can find:
 * [Llama2 提示词结构与编写指南](articles/llama_prompting.md)
 
 ## Content
+- [How to Prompt Llama 4](#how-to-prompt-llama-4)
 - [How to Prompt Llama 3](#how-to-prompt-llama-3)
 - [How to Prompt Llama 2](#how-to-prompt-llama-2)
   - [Asking for JSON output.](#asking-for-json-output)
@@ -29,6 +30,26 @@ For Chinese you can find:
   - [Tweet Sentiment](#tweet-sentiment)
   - [Alpaca](#alpaca)
 - [Reference](#reference)
+
+## How to Prompt Llama 4
+
+> Added 2026-08. Llama 4 (Scout 17B×16E, 10M context; Maverick 17B×128E, 1M context) is Meta's current open-weight, natively multimodal generation — as of Aug 2026 Meta lists Llama 4 as the latest release; no Llama 5 has shipped. Official reference: [Llama 4 model cards & prompt formats](https://developer.meta.com/ai/docs/model-cards-and-prompt-formats/llama4/).
+
+The header tokens changed from Llama 3 (`<|start_header_id|>` → `<|header_start|>`, `<|eot_id|>` → `<|eot|>`):
+
+```
+<|begin_of_text|><|header_start|>system<|header_end|>
+
+{{ system_prompt }}<|eot|><|header_start|>user<|header_end|>
+
+{{ user_msg_1 }}<|eot|><|header_start|>assistant<|header_end|>
+
+{{ model_answer_1 }}<|eot|>
+```
+
+* **Images**: the processor wraps each image as `<|image_start|> … <|image_end|>` (with `<|patch|>`, `<|tile_x_separator|>` / `<|tile_y_separator|>` and `<|image|>` inside); just pass images through `apply_chat_template`.
+* **Tool calling**: two formats are supported — Python-style `[func_name(param1=value1, param2=value2)]` or JSON `[{"name": "func_name", "parameters": {...}}]`; tool results come back in the `ipython` role.
+* In practice use `tokenizer.apply_chat_template(messages)` (Transformers / vLLM / llama.cpp all ship the template) rather than hand-writing tokens.
 
 ## How to Prompt Llama 3
 
